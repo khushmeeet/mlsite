@@ -17,14 +17,24 @@ textarea {
 
 #heading {
     margin-top: 50px;
-    margin-bottom: 30px;
+    text-align: center;
+}
+
+#text-form {
+    display: inline-block;
     text-align: center;
 }
 
 form {
-    padding-left: 300px;
+    text-align: center;
 }
 
 #result {
     text-align: center;
+    margin-top: 20px;
+}
+
+#legend {
+    text-align: center;
+
 }
