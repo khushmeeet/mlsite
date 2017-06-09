@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Sentiment analysis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{{ url_for('static',filename='style.css') }}" rel="stylesheet">
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    </head>
+    <body>
+        <h1 id="heading">Sentiment Analysis for Hindi text</h1>
+        <div>
+            <form id="input-form">
+                <textarea rows="10" cols="100"></textarea>
+                <br>
+                <a href="#" id="predict">Predict</a>
+            </form>
+            <pre id="result"></pre>
+        </div>
+        <script>
+            $('#predict').click(function(){
+	   			var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                console.log($SCRIPT_ROOT)
+                var text = $('textarea').val()
+                var result = ''
+	   			$.ajax({
+	   				type: "POST",
+	   				url: $SCRIPT_ROOT + "/predict",
+	   				data: text,
+	   				success: function(data) {
+                           $.each(data, function(key, value){
+                               result += key + ' : ' + value + '\n';
+                           })   
+	   					$('#result').text('Predicted Output: \n'+result);
+	   				}
+	   			});
+	   		});
+        </script>
+    </body>
+</html>
