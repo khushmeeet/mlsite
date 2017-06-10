@@ -40,7 +40,10 @@ def pencode(text):
 def lencode(text):
     vector = []
     for word in text.split(' '):
-        vector.append(word2index[word])
+        try:
+            vector.append(word2index[word])
+        except Exception:
+            vector.append(0)
     padded_seq = pad_sequences([vector], maxlen=100, value=0.)
     return padded_seq
 
