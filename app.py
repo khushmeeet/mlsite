@@ -113,7 +113,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             print('filename', filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('predict', filename=filename))
+            return redirect(url_for('fpredict', filename=filename))
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -121,17 +121,17 @@ def uploaded_file(filename):
                                filename)
 
 @app.route('/fpredict/<filename>', methods=['POST', 'GET'])
-def predict():
+def fpredict():
     query = request.get_data().decode('utf-8')
     data = predictor(query)
     return data
 
 
-# @app.route('/predict', methods=['POST', 'GET'])
-# def predict():
-#     query = request.get_data().decode('utf-8')
-#     data = predictor(query)
-#     return data
+@app.route('/predict', methods=['POST', 'GET'])
+def predict():
+    query = request.get_data().decode('utf-8')
+    data = predictor(query)
+    return data
 
 
 if __name__ == '__main__':
