@@ -127,11 +127,11 @@ def predict():
     return data
 
 
-@app.route('/predict', methods=['POST', 'GET'])
-def predict():
-    query = request.get_data().decode('utf-8')
-    data = predictor(query)
-    return data
+# @app.route('/predict', methods=['POST', 'GET'])
+# def predict():
+#     query = request.get_data().decode('utf-8')
+#     data = predictor(query)
+#     return data
 
 
 if __name__ == '__main__':
