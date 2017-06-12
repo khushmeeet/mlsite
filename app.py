@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, render_template, request, url_for
+from flask import Flask, jsonify, render_template, request, url_for, send_from_directory, redirect
+from werkzeug.utils import secure_filename
 from sklearn.externals import joblib
 import pickle
 import numpy as np
@@ -6,7 +7,11 @@ import os
 from load import init_model
 from keras.preprocessing.sequence import pad_sequences
 
+UPLOAD_FOLDER = './uploads/'
+ALLOWED_EXTENSIONS = set(['txt'])
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 global pmodel, lmodel, graph
 
@@ -23,6 +28,9 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def clean(query):
     return vectorizer.transform([query])
@@ -50,13 +58,7 @@ def lencode(text):
 def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/predict', methods=['POST', 'GET'])
-def predict():
-    query = request.get_data().decode('utf-8')
+def predictor(query):
     clean_query = clean(query)
     ada = adaboost.predict(clean_query)
     ber = bernoulli.predict(clean_query)
@@ -72,10 +74,8 @@ def predict():
     with graph.as_default():
         pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
         lout = lmodel.predict((lencode(query)))
-        print(lout)
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
-        print(lout)
     return jsonify({'AdaBoost': ada.tolist(),
                     'BernoulliNB': ber.tolist(),
                     'DecisionTree': dt.tolist(),
@@ -88,6 +88,51 @@ def predict():
                     'SVM': svm.tolist(),
                     '3-layer Perceptron': pout.tolist(),
                     'lstm network': lout.tolist()})
+
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/up', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            print(file)
+            filename = secure_filename(file.filename)
+            print('filename', filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('predict', filename=filename))
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
+@app.route('/fpredict/<filename>', methods=['POST', 'GET'])
+def predict():
+    query = request.get_data().decode('utf-8')
+    data = predictor(query)
+    return data
+
+
+@app.route('/predict', methods=['POST', 'GET'])
+def predict():
+    query = request.get_data().decode('utf-8')
+    data = predictor(query)
+    return data
+
 
 if __name__ == '__main__':
     with open('vectorizer.pkl', 'rb') as f:
