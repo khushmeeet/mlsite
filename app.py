@@ -65,7 +65,7 @@ def predictor(query):
     ada = adaboost.predict(clean_query)
     ber = bernoulli.predict(clean_query)
     # nb = naivebayes.classify(word_feats(query))
-    # me = maxent.classify(word_feats(query))
+    lg = logistic.predict(clean_query)
     dt = decisiontree.predict(clean_query)
     gb = gradientboost.predict(clean_query.toarray())
     knnp = knn.predict(clean_query)
@@ -87,7 +87,7 @@ def predictor(query):
             'RandomForest': rf.tolist(),
             'MultinomialNB': mnb.tolist(),
             'Naive Bayes': nb,
-            'MaxEnt': me,
+            'MaxEnt': lg,
             'SVM': svm.tolist(),
             '3-layer Perceptron': pout.tolist(),
             'lstm network': lout.tolist()}
@@ -99,7 +99,7 @@ def fpredictor(query):
     ada = adaboost.predict(clean_query)
     ber = bernoulli.predict(clean_query)
     # nb = naivebayes.classify(word_feats(query))
-    # me = maxent.classify(word_feats(query))
+    lg = logistic.predict(clean_query)
     dt = decisiontree.predict(clean_query)
     gb = gradientboost.predict(clean_query.toarray())
     knnp = knn.predict(clean_query)
@@ -121,7 +121,7 @@ def fpredictor(query):
             rf.tolist(),
             mnb.tolist(),
             nb,
-            me,
+            lg.tolist(),
             svm.tolist(),
             pout.tolist(),
             lout.tolist()]
@@ -204,18 +204,17 @@ def predict():
 
 
 def main():
-    global pmodel, lmodel, graph, vectorizer, naivebayes, word2index, maxent, \
+    global pmodel, lmodel, graph, vectorizer, naivebayes, word2index, logistic, \
     adaboost, bernoulli, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10
 
     with open('word2index.pkl', 'rb') as f:
         word2index = pickle.load(f)
-    # with open('maxent.pkl', 'rb') as f:
-    #     maxent = pickle.load(f)
     with open('vectorizer.pkl', 'rb') as f:
         vectorizer = pickle.load(f)
     # with open('naivebayes.pkl', 'rb') as f:
     #     naivebayes = pickle.load(f)
     pmodel, lmodel, graph = init_model()
+    logistic = joblib.load('logisticreg.pkl')
     adaboost = joblib.load('adaboost.pkl')
     bernoulli = joblib.load('bernoullinb.pkl')
     decisiontree = joblib.load('decisiontree.pkl')
