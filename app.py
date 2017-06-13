@@ -202,14 +202,15 @@ def predict():
 
 
 if __name__ == '__main__':
-    with open('vectorizer.pkl', 'rb') as f:
-        vectorizer = pickle.load(f)
+    
     with open('naivebayes.pkl', 'rb') as f:
         naivebayes = pickle.load(f)
     with open('word2index.pkl', 'rb') as f:
         word2index = pickle.load(f)
     with open('maxent.pkl', 'rb') as f:
         maxent = pickle.load(f)
+    with open('vectorizer.pkl', 'rb') as f:
+        vectorizer = pickle.load(f)
     pmodel, lmodel, graph = init_model()
     adaboost = joblib.load('adaboost.pkl')
     bernoulli = joblib.load('bernoullinb.pkl')
