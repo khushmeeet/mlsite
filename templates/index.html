@@ -31,11 +31,7 @@
     </div>
     <script>
         $('#predict').click(function () {
-            var $SCRIPT_ROOT = {
-                {
-                    request.script_root | tojson | safe
-                }
-            };
+            var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
             console.log($SCRIPT_ROOT)
             var text = $('textarea').val()
             var result = ''

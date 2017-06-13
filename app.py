@@ -191,7 +191,6 @@ def fpredict(filename):
     #         data[d] /= len(text)
     #     else:
     #         pass
-
     return jsonify(data)
 
 
