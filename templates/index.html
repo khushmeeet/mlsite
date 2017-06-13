@@ -22,7 +22,7 @@
             <br>
             <a href="#" id="predict">Predict</a>
         </form>
-        <form method="post" enctype=multipart/form-data action="http://localhost:8080/">
+        <form method="post" enctype=multipart/form-data action="{{url_for('upload_file')}}">
             <p><input type=file name=file>
                 <input type=submit value=Upload>
             </p>
@@ -32,7 +32,6 @@
     <script>
         $('#predict').click(function () {
             var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
-            console.log($SCRIPT_ROOT)
             var text = $('textarea').val()
             var result = ''
             $.ajax({

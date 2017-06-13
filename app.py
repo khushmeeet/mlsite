@@ -13,7 +13,7 @@ ALLOWED_EXTENSIONS = set(['txt'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-global pmodel, lmodel, graph
+global pmodel, lmodel, graph, vectorizer
 
 @app.context_processor
 def override_url_for():
