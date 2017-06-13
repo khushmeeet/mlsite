@@ -93,13 +93,13 @@ def predictor(query):
             'lstm network': lout.tolist()}
 
 # Shit, this is horrible!!
-# need to find better way to do this.
+# need to find a better way to do this.
 def fpredictor(query):
     clean_query = clean(query)
     ada = adaboost.predict(clean_query)
     ber = bernoulli.predict(clean_query)
-    nb = naivebayes.classify(word_feats(query))
-    me = maxent.classify(word_feats(query))
+    # nb = naivebayes.classify(word_feats(query))
+    # me = maxent.classify(word_feats(query))
     dt = decisiontree.predict(clean_query)
     gb = gradientboost.predict(clean_query.toarray())
     knnp = knn.predict(clean_query)
@@ -224,5 +224,5 @@ def main():
     randomforest = joblib.load('randomforest.pkl')
     multinomialnb = joblib.load('multinomialnb.pkl')
     svm10 = joblib.load('svm10.pkl')
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 6000))
     app.run(host='0.0.0.0', port=port)
