@@ -34,7 +34,6 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def clean(query):
-    print('vec', vectorizer)
     return vectorizer.transform([query])
 
 
@@ -59,6 +58,11 @@ def lencode(text):
 
 def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
+
+def open_pkl(str):
+    with open(str, 'rb') as f:
+        x = pickle.load(f)
+    return x
 
 def predictor(query):
     clean_query = clean(query)
@@ -86,8 +90,7 @@ def predictor(query):
             'KNNeighbors': knnp.tolist(),
             'RandomForest': rf.tolist(),
             'MultinomialNB': mnb.tolist(),
-            'Naive Bayes': nb,
-            'MaxEnt': lg,
+            'MaxEnt': lg.tolist(),
             'SVM': svm.tolist(),
             '3-layer Perceptron': pout.tolist(),
             'lstm network': lout.tolist()}
@@ -120,7 +123,6 @@ def fpredictor(query):
             knnp.tolist(),
             rf.tolist(),
             mnb.tolist(),
-            nb,
             lg.tolist(),
             svm.tolist(),
             pout.tolist(),
@@ -214,14 +216,14 @@ def main():
     # with open('naivebayes.pkl', 'rb') as f:
     #     naivebayes = pickle.load(f)
     pmodel, lmodel, graph = init_model()
-    logistic = joblib.load('logisticreg.pkl')
-    adaboost = joblib.load('adaboost.pkl')
-    bernoulli = joblib.load('bernoullinb.pkl')
-    decisiontree = joblib.load('decisiontree.pkl')
-    gradientboost = joblib.load('gradientboost.pkl')
-    knn = joblib.load('knn.pkl')
-    randomforest = joblib.load('randomforest.pkl')
-    multinomialnb = joblib.load('multinomialnb.pkl')
-    svm10 = joblib.load('svm10.pkl')
+    logistic = open_pkl('logisticreg.pkl')
+    adaboost = open_pkl('adaboost.pkl')
+    bernoulli = open_pkl('bernoullinb.pkl')
+    decisiontree = open_pkl('decisiontree.pkl')
+    gradientboost = open_pkl('gradientboost.pkl')
+    knn = open_pkl('knn.pkl')
+    randomforest = open_pkl('randomforest.pkl')
+    multinomialnb = open_pkl('multinomialnb.pkl')
+    svm10 = open_pkl('svm10.pkl')
     port = int(os.environ.get("PORT", 6000))
     app.run(host='0.0.0.0', port=port)
