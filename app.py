@@ -219,4 +219,5 @@ if __name__ == '__main__':
     randomforest = joblib.load('randomforest.pkl')
     multinomialnb = joblib.load('multinomialnb.pkl')
     svm10 = joblib.load('svm10.pkl')
-    app.run(port=8080, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
