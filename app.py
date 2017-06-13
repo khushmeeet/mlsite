@@ -76,26 +76,56 @@ def predictor(query):
         lout = lmodel.predict((lencode(query)))
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
-    return jsonify({'AdaBoost': ada.tolist(),
-                    'BernoulliNB': ber.tolist(),
-                    'DecisionTree': dt.tolist(),
-                    'GradientBoost': gb.tolist(),
-                    'KNNeighbors': knnp.tolist(),
-                    'RandomForest': rf.tolist(),
-                    'MultinomialNB': mnb.tolist(),
-                    'Naive Bayes': nb,
-                    'MaxEnt': me,
-                    'SVM': svm.tolist(),
-                    '3-layer Perceptron': pout.tolist(),
-                    'lstm network': lout.tolist()})
+    
+    return {'AdaBoost': ada.tolist(),
+            'BernoulliNB': ber.tolist(),
+            'DecisionTree': dt.tolist(),
+            'GradientBoost': gb.tolist(),
+            'KNNeighbors': knnp.tolist(),
+            'RandomForest': rf.tolist(),
+            'MultinomialNB': mnb.tolist(),
+            'Naive Bayes': nb,
+            'MaxEnt': me,
+            'SVM': svm.tolist(),
+            '3-layer Perceptron': pout.tolist(),
+            'lstm network': lout.tolist()}
+
+# Shit, this is horrible!!
+# need to find better way to do this.
+def fpredictor(query):
+    clean_query = clean(query)
+    ada = adaboost.predict(clean_query)
+    ber = bernoulli.predict(clean_query)
+    nb = naivebayes.classify(word_feats(query))
+    me = maxent.classify(word_feats(query))
+    dt = decisiontree.predict(clean_query)
+    gb = gradientboost.predict(clean_query.toarray())
+    knnp = knn.predict(clean_query)
+    rf = randomforest.predict(clean_query)
+    mnb = multinomialnb.predict(clean_query)
+    svm = svm10.predict(clean_query)
+
+    with graph.as_default():
+        pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
+        lout = lmodel.predict((lencode(query)))
+        pout = np.argmax(pout, axis=1)
+        lout = np.argmax(lout, axis=1)
+    
+    return [ada.tolist(),
+            ber.tolist(),
+            dt.tolist(),
+            gb.tolist(),
+            knnp.tolist(),
+            rf.tolist(),
+            mnb.tolist(),
+            nb,
+            me,
+            svm.tolist(),
+            pout.tolist(),
+            lout.tolist()]
 
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/up', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -114,24 +144,62 @@ def upload_file():
             print('filename', filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('fpredict', filename=filename))
+    else:
+        return render_template('index.html')
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
-
+# the most horrible code, i have ever written
 @app.route('/fpredict/<filename>', methods=['POST', 'GET'])
-def fpredict():
-    query = request.get_data().decode('utf-8')
-    data = predictor(query)
-    return data
+def fpredict(filename):
+    with open('./uploads/'+filename) as f:
+        text = f.read()
+    text = text.split('.')
+    predict_list = []
+    for t in text:
+        p = fpredictor(t)
+        predict_list.append(p)
+
+    data = {'AdaBoost': 0,
+            'BernoulliNB': 0,
+            'DecisionTree': 0,
+            'GradientBoost': 0,
+            'KNNeighbors': 0,
+            'RandomForest': 0,
+            'MultinomialNB': 0,
+            'Naive Bayes': '',
+            'MaxEnt': '',
+            'SVM': 0,
+            '3-layer Perceptron': 0,
+            'lstm network': 0}
+
+    for i in predict_list:
+        data['AdaBoost'] += i[0][0]
+        data['BernoulliNB'] += i[1][0]
+        data['DecisionTree'] += i[2][0]
+        data['GradientBoost'] += i[3][0]
+        data['KNNeighbors'] += i[4][0]
+        data['RandomForest'] += i[5][0]
+        data['MultinomialNB'] += i[6][0]
+        data['Naive Bayes'] = i[7]
+        data['MaxEnt'] = i[8]
+        data['SVM'] += i[9][0]
+        data['3-layer Perceptron'] += i[10][0]
+        data['lstm network'] += i[11][0]
+    
+    # for d in data:
+    #     if d != 'Naive Bayes' or d!= 'MaxEnt':
+    #         print(d)
+    #         data[d] /= len(text)
+    #     else:
+    #         pass
+
+    return jsonify(data)
 
 
 @app.route('/predict', methods=['POST', 'GET'])
 def predict():
     query = request.get_data().decode('utf-8')
     data = predictor(query)
-    return data
+    return jsonify(data)
 
 
 if __name__ == '__main__':
