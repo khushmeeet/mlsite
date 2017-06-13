@@ -7,13 +7,14 @@ import os
 from load import init_model
 from keras.preprocessing.sequence import pad_sequences
 
+global pmodel, lmodel, graph, vectorizer
+
 UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-global pmodel, lmodel, graph, vectorizer
 
 @app.context_processor
 def override_url_for():
@@ -33,6 +34,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def clean(query):
+    print('vec', vectorizer)
     return vectorizer.transform([query])
 
 
@@ -201,8 +203,10 @@ def predict():
     return jsonify(data)
 
 
-if __name__ == '__main__':
-    
+def main():
+    global pmodel, lmodel, graph, vectorizer, naivebayes, word2index, maxent, \
+    adaboost, bernoulli, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10
+
     with open('naivebayes.pkl', 'rb') as f:
         naivebayes = pickle.load(f)
     with open('word2index.pkl', 'rb') as f:
