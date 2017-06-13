@@ -207,14 +207,14 @@ def main():
     global pmodel, lmodel, graph, vectorizer, naivebayes, word2index, maxent, \
     adaboost, bernoulli, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10
 
-    with open('naivebayes.pkl', 'rb') as f:
-        naivebayes = pickle.load(f)
     with open('word2index.pkl', 'rb') as f:
         word2index = pickle.load(f)
     with open('maxent.pkl', 'rb') as f:
         maxent = pickle.load(f)
     with open('vectorizer.pkl', 'rb') as f:
         vectorizer = pickle.load(f)
+    with open('naivebayes.pkl', 'rb') as f:
+        naivebayes = pickle.load(f)
     pmodel, lmodel, graph = init_model()
     adaboost = joblib.load('adaboost.pkl')
     bernoulli = joblib.load('bernoullinb.pkl')
