@@ -9,7 +9,7 @@ from keras.preprocessing.sequence import pad_sequences
 
 global pmodel, lmodel, graph, vectorizer
 
-UPLOAD_FOLDER = '/uploads/'
+UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
@@ -143,9 +143,9 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            print(file)
             filename = secure_filename(file.filename)
-            print('filename', filename)
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.mkdir(UPLOAD_FOLDER)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('fpredict', filename=filename))
     else:
@@ -169,7 +169,6 @@ def fpredict(filename):
             'KNNeighbors': 0,
             'RandomForest': 0,
             'MultinomialNB': 0,
-            'Naive Bayes': '',
             'MaxEnt': '',
             'SVM': 0,
             '3-layer Perceptron': 0,
@@ -183,11 +182,10 @@ def fpredict(filename):
         data['KNNeighbors'] += i[4][0]
         data['RandomForest'] += i[5][0]
         data['MultinomialNB'] += i[6][0]
-        data['Naive Bayes'] = i[7]
-        data['MaxEnt'] = i[8]
-        data['SVM'] += i[9][0]
-        data['3-layer Perceptron'] += i[10][0]
-        data['lstm network'] += i[11][0]
+        data['MaxEnt'] = i[7][0]
+        data['SVM'] += i[8][0]
+        data['3-layer Perceptron'] += i[9][0]
+        data['lstm network'] += i[10][0]
     
     # for d in data:
     #     if d != 'Naive Bayes' or d!= 'MaxEnt':
