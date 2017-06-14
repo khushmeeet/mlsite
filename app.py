@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, url_for, send_from_directory, redirect
+from flask import Flask, jsonify, render_template, request, url_for, send_from_directory, redirect, flash
 from werkzeug.utils import secure_filename
 from sklearn.externals import joblib
 import pickle
@@ -9,7 +9,7 @@ from keras.preprocessing.sequence import pad_sequences
 
 global pmodel, lmodel, graph, vectorizer
 
-UPLOAD_FOLDER = './uploads/'
+UPLOAD_FOLDER = '/uploads/'
 ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
