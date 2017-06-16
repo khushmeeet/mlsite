@@ -168,13 +168,10 @@ def fpredict(filename):
         text = f.read()
     text = text.split('\n')
     predict_list = []
-    print(text)
     for t in text:
         p = fpredictor(t)
-        print('pppp', p)
         predict_list.append(p)
 
-    print('predict list',predict_list)
 
     data = {'AdaBoost': 0,
             'BernoulliNB': 0,
@@ -193,7 +190,6 @@ def fpredict(filename):
     for key in data:
         data[key] = str(get_most_count(predict_list[:,i]))
         i += 1
-    print(data)
     return jsonify(data)
 
 
