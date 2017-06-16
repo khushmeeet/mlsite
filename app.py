@@ -190,7 +190,7 @@ def fpredict(filename):
     for key in data:
         data[key] = str(get_most_count(predict_list[:,i]))
         i += 1
-    return jsonify(data)
+    return render_template('index.html', file_predictions=data)
 
 
 @app.route('/predict', methods=['POST', 'GET'])
