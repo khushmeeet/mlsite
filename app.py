@@ -1,13 +1,12 @@
-from flask import Flask, jsonify, render_template, request, url_for, send_from_directory, redirect, flash
+from flask import Flask, jsonify, render_template, request, url_for, redirect, flash
 from werkzeug.utils import secure_filename
-from sklearn.externals import joblib
 import pickle
 import numpy as np
 import os
 from load import init_model
+from collections import Counter
 from keras.preprocessing.sequence import pad_sequences
 
-global pmodel, lmodel, graph, vectorizer
 
 UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['txt'])
@@ -20,6 +19,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def override_url_for():
     return dict(url_for=dated_url_for)
 
+
 def dated_url_for(endpoint, **values):
     if endpoint == 'static':
         filename = values.get('filename', None)
@@ -29,9 +29,11 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def clean(query):
     return vectorizer.transform([query])
@@ -46,6 +48,7 @@ def pencode(text):
             vector[i] = 0
     return vector
 
+
 def lencode(text):
     vector = []
     for word in text.split(' '):
@@ -56,13 +59,16 @@ def lencode(text):
     padded_seq = pad_sequences([vector], maxlen=100, value=0.)
     return padded_seq
 
+
 def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
+
 
 def open_pkl(str):
     with open(str, 'rb') as f:
         x = pickle.load(f)
     return x
+
 
 def predictor(query):
     clean_query = clean(query)
@@ -116,18 +122,21 @@ def fpredictor(query):
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
     
-    return [ada.tolist(),
-            ber.tolist(),
-            dt.tolist(),
-            gb.tolist(),
-            knnp.tolist(),
-            rf.tolist(),
-            mnb.tolist(),
-            lg.tolist(),
-            svm.tolist(),
-            pout.tolist(),
-            lout.tolist()]
+    return [ada.tolist()[0],
+            ber.tolist()[0],
+            dt.tolist()[0],
+            gb.tolist()[0],
+            knnp.tolist()[0],
+            rf.tolist()[0],
+            mnb.tolist()[0],
+            lg.tolist()[0],
+            svm.tolist()[0],
+            pout.tolist()[0],
+            lout.tolist()[0]]
 
+
+def get_most_count(x):
+    return Counter(x).most_common()[0][0]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -151,16 +160,21 @@ def upload_file():
     else:
         return render_template('index.html')
 
+
 # the most horrible code, i have ever written
 @app.route('/fpredict/<filename>', methods=['POST', 'GET'])
 def fpredict(filename):
     with open('./uploads/'+filename) as f:
         text = f.read()
-    text = text.split('.')
+    text = text.split('\n')
     predict_list = []
+    print(text)
     for t in text:
         p = fpredictor(t)
+        print('pppp', p)
         predict_list.append(p)
+
+    print('predict list',predict_list)
 
     data = {'AdaBoost': 0,
             'BernoulliNB': 0,
@@ -174,25 +188,12 @@ def fpredict(filename):
             '3-layer Perceptron': 0,
             'lstm network': 0}
 
-    for i in predict_list:
-        data['AdaBoost'] += i[0][0]
-        data['BernoulliNB'] += i[1][0]
-        data['DecisionTree'] += i[2][0]
-        data['GradientBoost'] += i[3][0]
-        data['KNNeighbors'] += i[4][0]
-        data['RandomForest'] += i[5][0]
-        data['MultinomialNB'] += i[6][0]
-        data['MaxEnt'] = i[7][0]
-        data['SVM'] += i[8][0]
-        data['3-layer Perceptron'] += i[9][0]
-        data['lstm network'] += i[10][0]
-    
-    # for d in data:
-    #     if d != 'Naive Bayes' or d!= 'MaxEnt':
-    #         print(d)
-    #         data[d] /= len(text)
-    #     else:
-    #         pass
+    predict_list = np.array(predict_list)
+    i = 0
+    for key in data:
+        data[key] = str(get_most_count(predict_list[:,i]))
+        i += 1
+    print(data)
     return jsonify(data)
 
 
