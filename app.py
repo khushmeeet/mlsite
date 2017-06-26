@@ -199,6 +199,20 @@ def predict():
     data = predictor(query)
     return jsonify(data)
 
+@app.route('/description', methods=['GET'])
+def description():
+    return render_template('description.html')
+
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
+
+
+@app.route('/objective', methods=['GET'])
+def objective():
+    return render_template('objective.html')
+
 
 def main():
     global pmodel, lmodel, graph, vectorizer, naivebayes, word2index, logistic, \
