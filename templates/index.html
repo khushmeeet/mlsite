@@ -1,52 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>Sentiment analysis</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static',filename='style.css') }}" rel="stylesheet">
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-</head>
-
-<body>
-    <h1 id="heading">Sentiment Analysis for Hindi text</h1>
-    <div id="legend">
-        <pre>
-                <p>0 : neg &nbsp; 1 : neu &nbsp; 2 : pos</p>
-            </pre>
-    </div>
-    <div class="text-form">
-        <form id="input-form">
-            <textarea rows="10" cols="100"></textarea>
-            <br>
-            <a href="#" id="predict">Predict</a>
-        </form>
-        <form method="post" enctype=multipart/form-data>
-            <p><input type=file name=file>
-                <input type=submit value=Upload>
-            </p>
-        </form>
-        <pre id="result">{{file_predictions}}</pre>
-    </div>
-    <script>
-        $('#predict').click(function () {
-            var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
-            var text = $('textarea').val()
-            var result = ''
-            $.ajax({
-                type: "POST",
-                url: $SCRIPT_ROOT + "/predict",
-                data: text,
-                success: function (data) {
-                    $.each(data, function (key, value) {
-                        result += key + ' : ' + value + '\n';
-                    })
-                    $('#result').text('Predicted Output: \n' + result);
-                }
-            });
+{% extends "base.html" %}
+{% block content %}
+<h1 id="heading">Sentiment Analysis for Hindi text</h1>
+<div id="legend">
+    <p>0 : neg &nbsp; 1 : neu &nbsp; 2 : pos</p>
+</div>
+<div class="text-form">
+    <form id="input-form">
+        <textarea rows="10" cols="100" style="margin-bottom: 20px"></textarea>
+        <br>
+        <a href="#" id="predict">Predict</a>
+    </form>
+    <form method="post" enctype=multipart/form-data style="margin-top: 20px;">
+        <input type=file name=file>
+        <input type=submit value=Upload>
+    </form>
+    <p id="result">{{file_predictions}}</p>
+</div>
+<script>
+    $('#predict').click(function () {
+        var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
+        var text = $('textarea').val()
+        var result = ''
+        $.ajax({
+            type: "POST",
+            url: $SCRIPT_ROOT + "/predict",
+            data: text,
+            success: function (data) {
+                $.each(data, function (key, value) {
+                    result += key + ' : ' + value + '\n';
+                })
+                $('#result').text('Predicted Output: \n' + result);
+            }
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+{% endblock %}
