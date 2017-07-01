@@ -50,7 +50,7 @@ def liner():
             else:
                 emotion_sents[2] += 1
 
-        # overal score
+        # overall score
         score = most_common(list(data.values()))
 
         return jsonify([data, emotion_sents, score])

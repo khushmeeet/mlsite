@@ -11,10 +11,16 @@
             <a href="#" id="predict">Predict</a>
         </form>
     </div>
-    <div>
-        <code id="result"></code>
-        <code id="emotion-sents"></code>
-        <p id="overall"></p>
+    <h5 id="overall"></h5>
+    <div class="results">
+        <div class="hide" id="result-list">
+            <ul class="result-list">
+                <li>-------Prediction Results--------</li>
+            </ul>
+        </div>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
     </div>
     <script>
     $('#predict').click(function () {
@@ -26,12 +32,61 @@
             url: $SCRIPT_ROOT + "/liner",
             data: text,
             success: function (data) {
-                $.each(data[0], function (object, value) {
-                    result += object + ' : ' + value + '\n';
+                $('#result-list').removeClass('hide');
+                $('#result-list').addClass('aggregate-list');
+                $.each(data[0], function (key, value) {
+                    $('.result-list').append('<li>'+key+' : '+value+'<li>');
                 });
-                $('#result').text('Predicted Output: \n' + result);
-                $('#emotion-sents').text(data[1])
-                $('#overall').text(data[2])
+                if (data[2] == 0) {
+                    $('#overall').text('Overall sentiment : Negative');
+                } else if (data[2] == 1) {
+                    $('#overall').text('Overall sentiment : Neutral');
+                } else {
+                    $('#overall').text('Overall sentiment : Positive');
+                }
+{#                var bar_data = {#}
+{#                    labels:['Negative', 'Neutral', 'Positive'],#}
+{#                    series: [#}
+{#                        data[1]#}
+{#                    ]#}
+{#                };#}
+{#                new Chartist.Bar('#emotion-sents', bar_data, {#}
+{#                    axisX: {#}
+{#                        labelInterpolationFnc: Chartist.noop#}
+{#                    },#}
+{#                    axisY: {#}
+{#                        offset: 20#}
+{#                    }#}
+{#                });#}
+                var ctx = document.getElementById("myChart").getContext('2d');
+                ctx.canvas.width = 900;
+                ctx.canvas.height = 300;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["Negative", "Neutral", "Positive"],
+                        datasets: [{
+                            label: '# of sentences with negative, neutral and positive sentiment',
+                            data: data[1],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: true,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero:true
+                                }
+                            }]
+                        }
+                    }
+                });
             }
         });
     });

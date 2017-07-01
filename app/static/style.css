@@ -2,6 +2,10 @@ body {
     font-family: Helvetica, sans-serif;
 }
 
+.hide {
+    display: none;
+}
+
 /* index/home.html */
 
 .front-page {
@@ -10,6 +14,30 @@ body {
     margin: 0 auto;
 }
 
+/* projects/line.html */
+
+.result-list {
+    list-style: none;
+    padding: 20px;
+}
+
+.aggregate-list {
+    margin-left: 20px;
+    width: 40%;
+    padding-top: 10px;
+    margin-right: 50px;
+}
+
+#overall {
+    text-align: center;
+}
+
+.results {
+    display: inline-flex;
+    padding-top: 40px;
+}
+
+/* */
 #predict {
     height: 40px;
     width: 40px;
@@ -33,10 +61,6 @@ form {
     text-align: center;
 }
 
-#result {
-    text-align: center;
-    margin-top: 20px;
-}
 
 #legend {
     text-align: center;
