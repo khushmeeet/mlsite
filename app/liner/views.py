@@ -32,12 +32,15 @@ def liner():
                 '3-layer Perceptron': 0,
                 'lstm network': 0}
 
+        # overal per sentence
         predict_list = np.array(predict_list)
         i = 0
         for key in data:
             data[key] = str(get_most_count(predict_list[:, i]))
             i += 1
 
+        # all the sentences with 3 emotions
+        predict_list = predict_list.tolist()
         emotion_sents = [0, 0, 0]
         for p in predict_list:
             if most_common(p) == 0:
@@ -47,4 +50,7 @@ def liner():
             else:
                 emotion_sents[2] += 1
 
-        return jsonify(data)
+        # overal score
+        score = most_common(list(data.values()))
+
+        return jsonify([data, emotion_sents, score])

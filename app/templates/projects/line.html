@@ -12,22 +12,26 @@
         </form>
     </div>
     <div>
-        <pre id="result"></pre>
+        <code id="result"></code>
+        <code id="emotion-sents"></code>
+        <p id="overall"></p>
     </div>
     <script>
     $('#predict').click(function () {
         var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
-        var text = $('textarea').val()
-        var result = ''
+        var text = $('textarea').val();
+        var result = '';
         $.ajax({
             type: "POST",
             url: $SCRIPT_ROOT + "/liner",
             data: text,
             success: function (data) {
-                $.each(data, function (key, value) {
-                    result += key + ' : ' + value + '\n';
-                })
+                $.each(data[0], function (object, value) {
+                    result += object + ' : ' + value + '\n';
+                });
                 $('#result').text('Predicted Output: \n' + result);
+                $('#emotion-sents').text(data[1])
+                $('#overall').text(data[2])
             }
         });
     });
