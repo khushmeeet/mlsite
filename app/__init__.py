@@ -5,7 +5,9 @@ from .doc.views import doc_mod
 import os
 
 
+UPLOAD_FOLDER = './uploads/'
 app = Flask(__name__, static_folder='static')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 from app import views
 
 app.register_blueprint(home_mod)

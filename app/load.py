@@ -58,37 +58,6 @@ def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
 
 
-# def predictor(query):
-#     clean_query = clean(query)
-#     ada = adaboost.predict(clean_query)
-#     ber = bernoulli.predict(clean_query)
-#     lg = logistic.predict(clean_query)
-#     dt = decisiontree.predict(clean_query)
-#     gb = gradientboost.predict(clean_query.toarray())
-#     knnp = knn.predict(clean_query)
-#     rf = randomforest.predict(clean_query)
-#     mnb = multinomialnb.predict(clean_query)
-#     svm = svm10.predict(clean_query)
-#
-#     with graph.as_default():
-#         pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
-#         lout = lmodel.predict((lencode(query)))
-#         pout = np.argmax(pout, axis=1)
-#         lout = np.argmax(lout, axis=1)
-#
-#     return {'AdaBoost': ada.tolist(),
-#             'BernoulliNB': ber.tolist(),
-#             'DecisionTree': dt.tolist(),
-#             'GradientBoost': gb.tolist(),
-#             'KNNeighbors': knnp.tolist(),
-#             'RandomForest': rf.tolist(),
-#             'MultinomialNB': mnb.tolist(),
-#             'MaxEnt': lg.tolist(),
-#             'SVM': svm.tolist(),
-#             '3-layer Perceptron': pout.tolist(),
-#             'lstm network': lout.tolist()}
-
-
 def predictor(query):
     clean_query = clean(query)
     ada = adaboost.predict(clean_query)
@@ -122,6 +91,49 @@ def predictor(query):
 
 def get_most_count(x):
     return Counter(x).most_common()[0][0]
+
+
+def processing_results(query):
+    text = query.split('\n')
+    predict_list = []
+    for t in text:
+        p = predictor(t)
+        predict_list.append(p)
+
+    data = {'AdaBoost': 0,
+            'BernoulliNB': 0,
+            'DecisionTree': 0,
+            'GradientBoost': 0,
+            'KNNeighbors': 0,
+            'RandomForest': 0,
+            'MultinomialNB': 0,
+            'MaxEnt': '',
+            'SVM': 0,
+            '3-layer Perceptron': 0,
+            'lstm network': 0}
+
+    # overal per sentence
+    predict_list = np.array(predict_list)
+    i = 0
+    for key in data:
+        data[key] = str(get_most_count(predict_list[:, i]))
+        i += 1
+
+    # all the sentences with 3 emotions
+    predict_list = predict_list.tolist()
+    emotion_sents = [0, 0, 0]
+    for p in predict_list:
+        if most_common(p) == 0:
+            emotion_sents[0] += 1
+        elif most_common(p) == 1:
+            emotion_sents[1] += 1
+        else:
+            emotion_sents[2] += 1
+
+    # overall score
+    score = most_common(list(data.values()))
+
+    return data, emotion_sents, score
 
 
 pmodel, lmodel, graph = init_model()

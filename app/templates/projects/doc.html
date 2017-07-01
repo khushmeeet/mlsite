@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" enctype=multipart/form-data action="{{ url_for('doc.doc') }}">
+        <input type=file name=file>
+        <input type=submit value=Upload>
+    </form>
+    {% if data %}
+        <div>
+            <div>
+                <ul class="result-list">
+                    {% for key, value in data[0].items() %}
+                        <li>{{ key }} : {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

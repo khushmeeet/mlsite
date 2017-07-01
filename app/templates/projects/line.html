@@ -44,20 +44,6 @@
                 } else {
                     $('#overall').text('Overall sentiment : Positive');
                 }
-{#                var bar_data = {#}
-{#                    labels:['Negative', 'Neutral', 'Positive'],#}
-{#                    series: [#}
-{#                        data[1]#}
-{#                    ]#}
-{#                };#}
-{#                new Chartist.Bar('#emotion-sents', bar_data, {#}
-{#                    axisX: {#}
-{#                        labelInterpolationFnc: Chartist.noop#}
-{#                    },#}
-{#                    axisY: {#}
-{#                        offset: 20#}
-{#                    }#}
-{#                });#}
                 var ctx = document.getElementById("myChart").getContext('2d');
                 ctx.canvas.width = 900;
                 ctx.canvas.height = 300;
