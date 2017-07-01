@@ -156,7 +156,6 @@ def fpredict(filename):
         p = fpredictor(t)
         predict_list.append(p)
 
-
     data = {'AdaBoost': 0,
             'BernoulliNB': 0,
             'DecisionTree': 0,
