@@ -1,17 +1,61 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post" enctype=multipart/form-data action="{{ url_for('doc.doc') }}">
-        <input type=file name=file>
-        <input type=submit value=Upload>
+    <h4>Please upload the file for sentiment analysis</h4>
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('doc.doc') }}">
+        <input type="file" name="file" id="upload">
+        <input type="submit" value="Upload">
     </form>
     {% if data %}
-        <div>
-            <div>
+        <h5 class="overall">Overall sentiment : {{ data[2] }}</h5>
+        <div class="results">
+            <div class="aggregate-list">
+                <h5>Prediction Results</h5>
                 <ul class="result-list">
                     {% for key, value in data[0].items() %}
                         <li>{{ key }} : {{ value }}</li>
                     {% endfor %}
                 </ul>
+            </div>
+            <div>
+                <canvas id="barChart"></canvas>
+                <script>
+                    var ctx = document.getElementById("barChart").getContext('2d');
+                    ctx.canvas.width = 900;
+                    ctx.canvas.height = 300;
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Negative", "Neutral", "Positive"],
+                            datasets: [{
+                                label: '# of sentences with negative, neutral and positive sentiment',
+                                data: {{ data[1] }},
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true,
+                                        stepSize: 1
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                </script>
+            </div>
+            <div>
+                <script>
+                    var file = document.getElementById("upload").files;
+                    console.log(file)
+                </script>
             </div>
         </div>
     {% endif %}

@@ -18,24 +18,38 @@ body {
 
 .result-list {
     list-style: none;
-    padding: 20px;
+    padding: 10px 20px 20px 0px;
 }
 
 .aggregate-list {
-    margin-left: 20px;
-    width: 40%;
+    margin-left: 50px;
+    width: 50%;
     padding-top: 10px;
     margin-right: 50px;
 }
 
-#overall {
+.overall {
     text-align: center;
 }
 
 .results {
     display: inline-flex;
     padding-top: 40px;
+    width: 100%;
+    margin: 0 auto;
 }
+
+/* projects/doc.html */
+
+h4 {
+    text-align: center;
+}
+
+input[type=submit] {
+    background-color: palegreen;
+    border: 2px palegreen solid;
+}
+
 
 /* */
 #predict {

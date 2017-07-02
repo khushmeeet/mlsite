@@ -95,9 +95,12 @@ def get_most_count(x):
 
 def processing_results(query):
     text = query.split('\n')
+
     predict_list = []
+    line_sentiment = []
     for t in text:
         p = predictor(t)
+        line_sentiment.append(most_common(p))
         predict_list.append(p)
 
     data = {'AdaBoost': 0,
@@ -133,7 +136,7 @@ def processing_results(query):
     # overall score
     score = most_common(list(data.values()))
 
-    return data, emotion_sents, score
+    return data, emotion_sents, score, line_sentiment, text
 
 
 pmodel, lmodel, graph = init_model()

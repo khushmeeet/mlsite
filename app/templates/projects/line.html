@@ -11,15 +11,14 @@
             <a href="#" id="predict">Predict</a>
         </form>
     </div>
-    <h5 id="overall"></h5>
+    <h5 class="overall"></h5>
     <div class="results">
         <div class="hide" id="result-list">
-            <ul class="result-list">
-                <li>-------Prediction Results--------</li>
-            </ul>
+            <h5>Prediction Results</h5>
+            <ul class="result-list"></ul>
         </div>
         <div>
-            <canvas id="myChart"></canvas>
+            <canvas id="barChart"></canvas>
         </div>
     </div>
     <script>
@@ -44,7 +43,7 @@
                 } else {
                     $('#overall').text('Overall sentiment : Positive');
                 }
-                var ctx = document.getElementById("myChart").getContext('2d');
+                var ctx = document.getElementById("barChart").getContext('2d');
                 ctx.canvas.width = 900;
                 ctx.canvas.height = 300;
                 var myChart = new Chart(ctx, {

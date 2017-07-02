@@ -30,8 +30,8 @@ def doc():
             file.save(os.path.join(UPLOAD_FOLDER, filename))
         with open('./uploads/' + filename) as f:
             query = f.read()
-        data, emotion_sents, score = processing_results(query)
+        data, emotion_sents, score, line_sentiment, text = processing_results(query)
 
-        return render_template('projects/doc.html', data=[data, emotion_sents, score])
+        return render_template('projects/doc.html', data=[data, emotion_sents, score, line_sentiment, text])
     else:
         return render_template('projects/doc.html')
