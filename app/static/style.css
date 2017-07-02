@@ -50,6 +50,26 @@ input[type=submit] {
     border: 2px palegreen solid;
 }
 
+.text-list {
+    margin-top: 50px;
+    margin-left: 2%;
+}
+
+.text-list h5 {
+    padding-left: 2%;
+}
+
+.neg {
+    color: #f05b4f;
+}
+
+.neu {
+    color: dodgerblue;
+}
+
+.pos {
+    color: #59922b;
+}
 
 /* */
 #predict {

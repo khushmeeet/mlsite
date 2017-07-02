@@ -94,8 +94,7 @@ def get_most_count(x):
 
 
 def processing_results(query):
-    text = query.split('\n')
-
+    text = query.split('.')[:-1]
     predict_list = []
     line_sentiment = []
     for t in text:
@@ -113,7 +112,7 @@ def processing_results(query):
             'MaxEnt': '',
             'SVM': 0,
             '3-layer Perceptron': 0,
-            'lstm network': 0}
+            'LSTM network': 0}
 
     # overal per sentence
     predict_list = np.array(predict_list)

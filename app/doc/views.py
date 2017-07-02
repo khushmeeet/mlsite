@@ -32,6 +32,6 @@ def doc():
             query = f.read()
         data, emotion_sents, score, line_sentiment, text = processing_results(query)
 
-        return render_template('projects/doc.html', data=[data, emotion_sents, score, line_sentiment, text])
+        return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:
         return render_template('projects/doc.html')

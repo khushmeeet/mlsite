@@ -2,78 +2,86 @@
 {% block content %}
     <div id="legend">
         <h4>Please Enter your hindi text for sentiment analysis</h4>
-        <p>0 : neg &nbsp; 1 : neu &nbsp; 2 : pos</p>
     </div>
     <div class="text-form">
-        <form id="input-form">
-            <textarea rows="10" cols="100" style="margin-bottom: 20px"></textarea>
+        <form id="input-form" action="{{ url_for('liner.liner') }}", method="post">
+            <textarea rows="10" cols="100" style="margin-bottom: 20px" name="liner-text"></textarea>
             <br>
-            <a href="#" id="predict">Predict</a>
+            <input type="submit" value="Predict">
         </form>
     </div>
-    <h5 class="overall"></h5>
-    <div class="results">
-        <div class="hide" id="result-list">
-            <h5>Prediction Results</h5>
-            <ul class="result-list"></ul>
-        </div>
-        <div>
-            <canvas id="barChart"></canvas>
-        </div>
-    </div>
-    <script>
-    $('#predict').click(function () {
-        var $SCRIPT_ROOT = {{request.script_root | tojson | safe}};
-        var text = $('textarea').val();
-        var result = '';
-        $.ajax({
-            type: "POST",
-            url: $SCRIPT_ROOT + "/liner",
-            data: text,
-            success: function (data) {
-                $('#result-list').removeClass('hide');
-                $('#result-list').addClass('aggregate-list');
-                $.each(data[0], function (key, value) {
-                    $('.result-list').append('<li>'+key+' : '+value+'<li>');
-                });
-                if (data[2] == 0) {
-                    $('#overall').text('Overall sentiment : Negative');
-                } else if (data[2] == 1) {
-                    $('#overall').text('Overall sentiment : Neutral');
-                } else {
-                    $('#overall').text('Overall sentiment : Positive');
-                }
-                var ctx = document.getElementById("barChart").getContext('2d');
-                ctx.canvas.width = 900;
-                ctx.canvas.height = 300;
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ["Negative", "Neutral", "Positive"],
-                        datasets: [{
-                            label: '# of sentences with negative, neutral and positive sentiment',
-                            data: data[1],
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ]
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: true,
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero:true
-                                }
+    {% if data %}
+        {% if data[2] == 0 %}
+            <h5 class="overall">Overall sentiment : <span class="neg">Negative</span></h5>
+        {% elif data[2] == 1 %}
+            <h5 class="overall">Overall sentiment : <span class="neu">Neutral</span></h5>
+        {% else %}
+            <h5 class="overall">Overall sentiment : <span class="pos">Negative</span></h5>
+        {% endif %}
+        <div class="results">
+            <div class="aggregate-list">
+                <h5>Prediction Results</h5>
+                <ul class="result-list">
+                    {% for key, value in data[0].items() %}
+                        {% if value == "0" %}
+                            <li>{{ key }} - <span class="neg">Negative</span></li>
+                        {% elif value == "1" %}
+                            <li>{{ key }} - <span class="neu">Neutral</span></li>
+                        {% else %}
+                            <li>{{ key }} - <span class="pos">Positive</span></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <canvas id="barChart"></canvas>
+                <script>
+                    var ctx = document.getElementById("barChart").getContext('2d');
+                    ctx.canvas.width = 900;
+                    ctx.canvas.height = 300;
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Negative", "Neutral", "Positive"],
+                            datasets: [{
+                                label: '# of sentences with negative, neutral and positive sentiment',
+                                data: {{ data[1] }},
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ]
                             }]
+                        },
+                        options: {
+                            maintainAspectRatio: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true,
+                                        stepSize: 1
+                                    }
+                                }]
+                            }
                         }
-                    }
-                });
-            }
-        });
-    });
-</script>
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="text-list">
+            <h5>Prediction sentence by sentence</h5>
+            <ul>
+                {% for line,sentiment in data[3] %}
+                    {% if sentiment == 0 %}
+                        <li>{{ line }} - <span class="neg">Negative</span></li>
+                    {% elif sentiment == 1 %}
+                        <li>{{ line }} - <span class="neu">Neutral</span></li>
+                    {% else %}
+                        <li>{{ line }} - <span class="pos">Positive</span></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}
