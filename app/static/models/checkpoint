@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/khushmeetsingh/SOURCE_CODE/internship/internship/char-conv/50split-128filters-3conv(3,7,7)-256dim-128batch-1dense-L2.tflearn"
+all_model_checkpoint_paths: "/Users/khushmeetsingh/SOURCE_CODE/internship/internship/char-conv/50split-128filters-3conv(3,7,7)-256dim-128batch-1dense-L2.tflearn"

@@ -4,6 +4,9 @@ from keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import pickle
 from collections import Counter
+from tflearn.layers import conv_1d, embedding, max_pool_1d, fully_connected, flatten, regression, input_data, dropout
+import tflearn
+from memory_profiler import profile
 
 
 def most_common(lst):
@@ -57,7 +60,7 @@ def lencode(text):
 def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
 
-
+@profile
 def predictor(query):
     clean_query = clean(query)
     ada = adaboost.predict(clean_query)
@@ -76,6 +79,10 @@ def predictor(query):
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
 
+
+
+    # cnn_out = np.argmax(model.predict(lencode(query)), axis=1)
+
     return [ada.tolist()[0],
             ber.tolist()[0],
             dt.tolist()[0],
@@ -92,7 +99,7 @@ def predictor(query):
 def get_most_count(x):
     return Counter(x).most_common()[0][0]
 
-
+@profile
 def processing_results(query):
     text = query.split('.')[:-1]
     predict_list = []
@@ -138,6 +145,22 @@ def processing_results(query):
     return data, emotion_sents, score, line_sentiment, text
 
 
+def cnn_model():
+    model = input_data(shape=[None, 100])
+    model = embedding(model, input_dim=9451, output_dim=256)
+    conv1 = conv_1d(model, 128, filter_size=3, padding='same', activation='relu', regularizer='L2')
+    conv2 = conv_1d(conv1, 128, filter_size=3, padding='same', activation='relu', regularizer='L2')
+    conv2 = conv_1d(conv2, 128, filter_size=7, padding='same', activation='relu', regularizer='L2')
+    conv2 = conv_1d(conv2, 128, filter_size=7, padding='same', activation='relu', regularizer='L2')
+    pool = max_pool_1d(conv2, kernel_size=3)
+    pool = dropout(pool, 0.5)
+    pool = flatten(pool)
+    pool = fully_connected(pool, 3, activation='softmax')
+    reg = regression(pool, optimizer='adam', learning_rate=0.01, loss='categorical_crossentropy')
+    mod = tflearn.DNN(reg)
+    return mod
+
+
 pmodel, lmodel, graph = init_model()
 logistic = open_pkl('app/static/models/logisticreg.pkl')
 adaboost = open_pkl('app/static/models/adaboost.pkl')
@@ -148,3 +171,5 @@ knn = open_pkl('app/static/models/knn.pkl')
 randomforest = open_pkl('app/static/models/randomforest.pkl')
 multinomialnb = open_pkl('app/static/models/multinomialnb.pkl')
 svm10 = open_pkl('app/static/models/svm10.pkl')
+# model = cnn_model()
+# model.load('app/static/models/50split-128filters-3conv(3,7,7)-256dim-128batch-1dense-L2.tflearn', weights_only=True)

@@ -6,3 +6,4 @@ gunicorn==19.7.1
 h5py==2.7.0
 scikit-learn==0.18
 tweepy==3.5.0
+memory_profiler==0.47
