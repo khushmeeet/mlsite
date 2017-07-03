@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify, render_template
 from ..load import processing_results
+from memory_profiler import profile
 
 liner_mod = Blueprint('liner', __name__, template_folder='templates', static_folder='static')
 
-
+@profile
 @liner_mod.route('/liner', methods=['GET', 'POST'])
 def liner():
     if request.method == 'POST':

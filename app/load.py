@@ -4,8 +4,6 @@ from keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import pickle
 from collections import Counter
-from tflearn.layers import conv_1d, embedding, max_pool_1d, fully_connected, flatten, regression, input_data, dropout
-import tflearn
 from memory_profiler import profile
 
 
@@ -26,10 +24,25 @@ vectorizer = open_pkl('app/static/models/vectorizer.pkl')
 def init_model():
     perceptron_model = load_model('app/static/models/3layer.h5')
     lstm_model = load_model('app/static/models/lstm.h5')
+    cnn_model = load_model('app/static/models/cnn.h5')
+    cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
-    return perceptron_model, lstm_model, graph
+    return perceptron_model, lstm_model, cnn_model, graph
+
+
+
+pmodel, lmodel, cnn, graph = init_model()
+logistic = open_pkl('app/static/models/logisticreg.pkl')
+adaboost = open_pkl('app/static/models/adaboost.pkl')
+bernoulli = open_pkl('app/static/models/bernoullinb.pkl')
+decisiontree = open_pkl('app/static/models/decisiontree.pkl')
+gradientboost = open_pkl('app/static/models/gradientboost.pkl')
+knn = open_pkl('app/static/models/knn.pkl')
+randomforest = open_pkl('app/static/models/randomforest.pkl')
+multinomialnb = open_pkl('app/static/models/multinomialnb.pkl')
+svm10 = open_pkl('app/static/models/svm10.pkl')
 
 
 def clean(query):
@@ -76,12 +89,10 @@ def predictor(query):
     with graph.as_default():
         pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
         lout = lmodel.predict((lencode(query)))
+        cnn_out = cnn.predict(lencode(query))
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
-
-
-
-    # cnn_out = np.argmax(model.predict(lencode(query)), axis=1)
+        cnn_out = np.argmax(cnn_out, axis=1)
 
     return [ada.tolist()[0],
             ber.tolist()[0],
@@ -93,7 +104,8 @@ def predictor(query):
             lg.tolist()[0],
             svm.tolist()[0],
             pout.tolist()[0],
-            lout.tolist()[0]]
+            lout.tolist()[0],
+            cnn_out.tolist()[0]]
 
 
 def get_most_count(x):
@@ -119,7 +131,8 @@ def processing_results(query):
             'Logistic Regression': 0,
             'SVM': 0,
             '3-layer Perceptron': 0,
-            'LSTM network': 0}
+            'LSTM network': 0,
+            'Convolutional Neural Network': 0}
 
     # overal per sentence
     predict_list = np.array(predict_list)
@@ -142,34 +155,8 @@ def processing_results(query):
     # overall score
     score = most_common(list(data.values()))
 
+    # del adaboost, bernoulli, logistic, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10, \
+    #     pmodel, lmodel, cnn
+
     return data, emotion_sents, score, line_sentiment, text
 
-
-def cnn_model():
-    model = input_data(shape=[None, 100])
-    model = embedding(model, input_dim=9451, output_dim=256)
-    conv1 = conv_1d(model, 128, filter_size=3, padding='same', activation='relu', regularizer='L2')
-    conv2 = conv_1d(conv1, 128, filter_size=3, padding='same', activation='relu', regularizer='L2')
-    conv2 = conv_1d(conv2, 128, filter_size=7, padding='same', activation='relu', regularizer='L2')
-    conv2 = conv_1d(conv2, 128, filter_size=7, padding='same', activation='relu', regularizer='L2')
-    pool = max_pool_1d(conv2, kernel_size=3)
-    pool = dropout(pool, 0.5)
-    pool = flatten(pool)
-    pool = fully_connected(pool, 3, activation='softmax')
-    reg = regression(pool, optimizer='adam', learning_rate=0.01, loss='categorical_crossentropy')
-    mod = tflearn.DNN(reg)
-    return mod
-
-
-pmodel, lmodel, graph = init_model()
-logistic = open_pkl('app/static/models/logisticreg.pkl')
-adaboost = open_pkl('app/static/models/adaboost.pkl')
-bernoulli = open_pkl('app/static/models/bernoullinb.pkl')
-decisiontree = open_pkl('app/static/models/decisiontree.pkl')
-gradientboost = open_pkl('app/static/models/gradientboost.pkl')
-knn = open_pkl('app/static/models/knn.pkl')
-randomforest = open_pkl('app/static/models/randomforest.pkl')
-multinomialnb = open_pkl('app/static/models/multinomialnb.pkl')
-svm10 = open_pkl('app/static/models/svm10.pkl')
-# model = cnn_model()
-# model.load('app/static/models/50split-128filters-3conv(3,7,7)-256dim-128batch-1dense-L2.tflearn', weights_only=True)
