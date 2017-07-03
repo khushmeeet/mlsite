@@ -7,7 +7,7 @@ twitter_mod = Blueprint('twitter', __name__, template_folder='templates', static
 
 ascii_chars = set(string.printable)
 ascii_chars.remove(' ')
-
+ascii_chars.add('...')
 
 def takeout_non_ascii(s):
     return list(filter(lambda x: x not in ascii_chars, s))
