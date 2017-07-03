@@ -54,7 +54,7 @@ def pencode(text):
     for i, word in enumerate(text.split(' ')):
         try:
             vector[word2index[word]] = 1
-        except Exception:
+        except KeyError:
             vector[i] = 0
     return vector
 
@@ -64,7 +64,7 @@ def lencode(text):
     for word in text.split(' '):
         try:
             vector.append(word2index[word])
-        except Exception:
+        except KeyError:
             vector.append(0)
     padded_seq = pad_sequences([vector], maxlen=100, value=0.)
     return padded_seq
