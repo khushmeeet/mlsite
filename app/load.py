@@ -5,8 +5,10 @@ import tensorflow as tf
 import pickle
 from collections import Counter
 import resource
+import tweepy
 
 print('load executed')
+
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
@@ -23,18 +25,18 @@ vectorizer = open_pkl('app/static/models/vectorizer.pkl')
 
 
 def init_model():
-    perceptron_model = load_model('app/static/models/3layer.h5')
-    lstm_model = load_model('app/static/models/lstm.h5')
+    # perceptron_model = load_model('app/static/models/3layer.h5')
+    # lstm_model = load_model('app/static/models/lstm.h5')
     cnn_model = load_model('app/static/models/cnn.h5')
     cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
-    return perceptron_model, lstm_model, cnn_model, graph
+    return cnn_model, graph
 
 
 
-pmodel, lmodel, cnn, graph = init_model()
+cnn, graph = init_model()
 logistic = open_pkl('app/static/models/logisticreg.pkl')
 adaboost = open_pkl('app/static/models/adaboost.pkl')
 bernoulli = open_pkl('app/static/models/bernoullinb.pkl')
@@ -44,6 +46,12 @@ knn = open_pkl('app/static/models/knn.pkl')
 randomforest = open_pkl('app/static/models/randomforest.pkl')
 multinomialnb = open_pkl('app/static/models/multinomialnb.pkl')
 svm10 = open_pkl('app/static/models/svm10.pkl')
+
+auth = tweepy.OAuthHandler('hXJ8TwQzVya3yYwQN1GNvGNNp', 'diX9CFVOOfWNli2KTAYY13vZVJgw1sYlEeOTxsLsEb2x73oI8S')
+auth.set_access_token('2155329456-53H1M9QKqlQbEkLExgVgkeallweZ9N74Aigm9Kh',
+                      'waDPwamuPkYHFLdVNZ5YF2SNWuYfGHDVFue6bEbEGjTZb')
+
+api = tweepy.API(auth)
 
 
 def clean(query):
@@ -88,11 +96,11 @@ def predictor(query):
     svm = svm10.predict(clean_query)
 
     with graph.as_default():
-        pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
-        lout = lmodel.predict((lencode(query)))
+        # pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
+        # lout = lmodel.predict((lencode(query)))
         cnn_out = cnn.predict(lencode(query))
-        pout = np.argmax(pout, axis=1)
-        lout = np.argmax(lout, axis=1)
+        # pout = np.argmax(pout, axis=1)
+        # lout = np.argmax(lout, axis=1)
         cnn_out = np.argmax(cnn_out, axis=1)
 
     print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -106,8 +114,8 @@ def predictor(query):
             mnb.tolist()[0],
             lg.tolist()[0],
             svm.tolist()[0],
-            pout.tolist()[0],
-            lout.tolist()[0],
+            # pout.tolist()[0],
+            # lout.tolist()[0],
             cnn_out.tolist()[0]]
 
 
@@ -133,8 +141,8 @@ def processing_results(query):
             'MultinomialNB': 0,
             'Logistic Regression': 0,
             'SVM': 0,
-            '3-layer Perceptron': 0,
-            'LSTM network': 0,
+            # '3-layer Perceptron': 0,
+            # 'LSTM network': 0,
             'Convolutional Neural Network': 0}
 
     # overal per sentence
