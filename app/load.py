@@ -6,6 +6,7 @@ import pickle
 from collections import Counter
 import resource
 
+print('load executed')
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
@@ -157,8 +158,7 @@ def processing_results(query):
     # overall score
     score = most_common(list(data.values()))
 
-    # del adaboost, bernoulli, logistic, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10, \
-    #     pmodel, lmodel, cnn
     print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     return data, emotion_sents, score, line_sentiment, text
+
 

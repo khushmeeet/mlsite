@@ -23,7 +23,7 @@ def twitter():
 
         api = tweepy.API(auth)
 
-        public_tweets = api.search(request.form['topic'], lang='hi', rpp=20)
+        public_tweets = api.search(request.form['topic'], lang='hi', rpp=100)
         text = []
         for tweet in public_tweets:
             temp = ''.join(takeout_non_ascii(tweet.text))
@@ -31,7 +31,6 @@ def twitter():
 
         query = '.'.join(text)
         data, emotion_sents, score, line_sentiment, text = processing_results(query)
-        # del data, text
 
         return render_template('projects/twitter.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:
