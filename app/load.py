@@ -4,7 +4,7 @@ from keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import pickle
 from collections import Counter
-from memory_profiler import profile
+import resource
 
 
 def most_common(lst):
@@ -73,7 +73,7 @@ def lencode(text):
 def word_feats(text):
     return dict([(word, True) for word in text.split(' ')])
 
-@profile
+
 def predictor(query):
     clean_query = clean(query)
     ada = adaboost.predict(clean_query)
@@ -94,6 +94,8 @@ def predictor(query):
         lout = np.argmax(lout, axis=1)
         cnn_out = np.argmax(cnn_out, axis=1)
 
+    print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+
     return [ada.tolist()[0],
             ber.tolist()[0],
             dt.tolist()[0],
@@ -111,7 +113,7 @@ def predictor(query):
 def get_most_count(x):
     return Counter(x).most_common()[0][0]
 
-@profile
+
 def processing_results(query):
     text = query.split('.')[:-1]
     predict_list = []
@@ -157,6 +159,6 @@ def processing_results(query):
 
     # del adaboost, bernoulli, logistic, decisiontree, gradientboost, knn, randomforest, multinomialnb, svm10, \
     #     pmodel, lmodel, cnn
-
+    print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     return data, emotion_sents, score, line_sentiment, text
 

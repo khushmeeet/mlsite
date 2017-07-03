@@ -2,7 +2,6 @@ from flask import Blueprint, request, render_template
 from ..load import processing_results
 import tweepy
 import string
-from memory_profiler import profile
 
 
 twitter_mod = Blueprint('twitter', __name__, template_folder='templates', static_folder='static')
@@ -14,7 +13,7 @@ ascii_chars.remove(' ')
 def takeout_non_ascii(s):
     return list(filter(lambda x: x not in ascii_chars, s))
 
-@profile
+
 @twitter_mod.route('/twitter', methods=['GET', 'POST'])
 def twitter():
     if request.method == 'POST':

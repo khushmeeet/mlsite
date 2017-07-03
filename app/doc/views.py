@@ -2,7 +2,6 @@ from flask import Blueprint, request, render_template, flash, redirect
 from ..load import processing_results
 from werkzeug.utils import secure_filename
 import os
-from memory_profiler import profile
 
 doc_mod = Blueprint('doc', __name__, template_folder='templates', static_folder='static')
 
@@ -13,7 +12,7 @@ ALLOWED_EXTENSIONS = {'txt'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@profile
+
 @doc_mod.route('/doc', methods=['GET', 'POST'])
 def doc():
     if request.method == 'POST':
