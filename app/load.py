@@ -109,7 +109,7 @@ def processing_results(query):
             'KNNeighbors': 0,
             'RandomForest': 0,
             'MultinomialNB': 0,
-            'MaxEnt': '',
+            'Logistic Regression': 0,
             'SVM': 0,
             '3-layer Perceptron': 0,
             'LSTM network': 0}
@@ -118,7 +118,7 @@ def processing_results(query):
     predict_list = np.array(predict_list)
     i = 0
     for key in data:
-        data[key] = str(get_most_count(predict_list[:, i]))
+        data[key] = get_most_count(predict_list[:, i])
         i += 1
 
     # all the sentences with 3 emotions

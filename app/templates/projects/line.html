@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <div id="legend">
+    <div class="legend">
         <h4>Please Enter your hindi text for sentiment analysis</h4>
     </div>
     <div class="text-form">
@@ -23,9 +23,9 @@
                 <h5>Prediction Results</h5>
                 <ul class="result-list">
                     {% for key, value in data[0].items() %}
-                        {% if value == "0" %}
+                        {% if value == 0 %}
                             <li>{{ key }} - <span class="neg">Negative</span></li>
-                        {% elif value == "1" %}
+                        {% elif value == 1 %}
                             <li>{{ key }} - <span class="neu">Neutral</span></li>
                         {% else %}
                             <li>{{ key }} - <span class="pos">Positive</span></li>

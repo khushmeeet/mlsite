@@ -14,6 +14,12 @@ body {
     margin: 0 auto;
 }
 
+.legend {
+    text-align: center;
+    margin-top: 50px;
+
+}
+
 /* projects/line.html */
 
 .result-list {
@@ -71,6 +77,13 @@ input[type=submit] {
     color: #59922b;
 }
 
+/* projects/twitter.html */
+
+.text-form {
+    text-align: center;
+}
+
+
 /* */
 #predict {
     height: 40px;
@@ -86,21 +99,11 @@ input[type=submit] {
     text-align: center;
 }
 
-#text-form {
-    display: inline-block;
-    text-align: center;
-}
 
 form {
     text-align: center;
 }
 
-
-#legend {
-    text-align: center;
-    margin-top: 50px;
-
-}
 
 input[type=file] {
     margin: auto;
