@@ -37,8 +37,8 @@ def doc():
         if len(text) == 0:
             return render_template('projects/doc.html', message='Please separate each line with "."')
 
-        data, emotion_sents, score, line_sentiment, text = processing_results(text)
+        data, emotion_sents, score, line_sentiment, text, length = processing_results(text)
 
-        return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
+        return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment), length])
     else:
         return render_template('projects/doc.html')

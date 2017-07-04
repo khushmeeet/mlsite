@@ -181,4 +181,4 @@ def processing_results(query):
     # overall score
     score = most_common(list(data.values()))
     gc.collect()
-    return data, emotion_sents, score, line_sentiment, query
+    return data, emotion_sents, score, line_sentiment, query, len(query)

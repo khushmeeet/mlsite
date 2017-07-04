@@ -25,9 +25,9 @@ def twitter():
             if not len(temp) in range(3):
                 text.append(temp)
 
-        data, emotion_sents, score, line_sentiment, text = processing_results(text)
+        data, emotion_sents, score, line_sentiment, text, length = processing_results(text)
 
-        return render_template('projects/twitter.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
+        return render_template('projects/twitter.html', data=[data, emotion_sents, score, zip(text, line_sentiment), length])
     else:
         return render_template('projects/twitter.html')
 

@@ -72,7 +72,7 @@
                                 yAxes: [{
                                     ticks: {
                                         beginAtZero: true,
-                                        stepSize: 1
+                                        stepSize: 5
                                     }
                                 }]
                             }
@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="text-list">
-            <h5>Prediction sentence by sentence</h5>
+            <h5>Prediction sentence by sentence (Total tweets - {{ data[4] }} )</h5>
             <ul>
                 {% for line,sentiment in data[3] %}
                     {% if sentiment == 0 %}
