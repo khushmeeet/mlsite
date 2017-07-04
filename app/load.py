@@ -11,8 +11,8 @@ import _pickle
 
 session = boto3.session.Session(region_name='ap-south-1')
 s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),
-                          aws_access_key_id='AKIAIMTAOA6XB6DCJPVQ',
-                          aws_secret_access_key='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')
+                          aws_access_key_id='AKIAJMHZHAQ2NOEWDWVA',
+                          aws_secret_access_key='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')
 
 print(session, s3client)
 
