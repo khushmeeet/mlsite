@@ -7,14 +7,14 @@ import resource
 import tweepy
 import boto3.session
 import _pickle
+import h5py
+import gc
 
 
 session = boto3.session.Session(region_name='ap-south-1')
 s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4', region_name='ap-south-1'),
                           aws_access_key_id='AKIAI33TBMEPEQC42LWA',
                           aws_secret_access_key='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')
-
-print(session, s3client)
 
 
 def most_common(lst):
@@ -23,12 +23,13 @@ def most_common(lst):
 
 def load_from_s3(str):
     response = s3client.get_object(Bucket='mlsite-bucket', Key=str)
-    body = response['Body'].read()
+    body = response['Body']
     if '.h5' in str:
-        print('type', type(body))
-        detector = load_model(body)
+        f = open(body, 'rb')
+        h = h5py.File(f, 'r')
+        detector = load_model(h)
     else:
-        detector = _pickle.loads(body)
+        detector = _pickle.loads(body.read())
     return detector
 
 
@@ -43,17 +44,17 @@ vectorizer = load_from_s3('models/vectorizer.pkl')
 
 
 def init_model():
-    perceptron_model = load_model('app/static/models/3layer.h5')
     lstm_model = load_model('app/static/models/lstm.h5')
-    cnn_model = load_model('app/static/models/cnn.h5')
-    cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    perceptron_model = load_model('app/static/models/3layer.h5')
+    # cnn_model = load_model('app/static/models/cnn.h5')
+    # cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
-    return perceptron_model, lstm_model, cnn_model, graph
+    return perceptron_model, lstm_model, graph
 
 
-pmodel, lmodel, cnn, graph = init_model()
+pmodel, lmodel, graph = init_model()
 logistic = load_from_s3('models/logisticreg.pkl')
 adaboost = load_from_s3('models/adaboost.pkl')
 bernoulli = load_from_s3('models/bernoullinb.pkl')
@@ -69,6 +70,8 @@ auth.set_access_token('2155329456-53H1M9QKqlQbEkLExgVgkeallweZ9N74Aigm9Kh',
                       'waDPwamuPkYHFLdVNZ5YF2SNWuYfGHDVFue6bEbEGjTZb')
 
 api = tweepy.API(auth)
+
+print('load is executing')
 
 
 def clean(query):
@@ -115,10 +118,10 @@ def predictor(query):
     with graph.as_default():
         pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
         lout = lmodel.predict((lencode(query)))
-        cnn_out = cnn.predict(lencode(query))
+        # cnn_out = cnn.predict(lencode(query))
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)
-        cnn_out = np.argmax(cnn_out, axis=1)
+        # cnn_out = np.argmax(cnn_out, axis=1)
 
     print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
@@ -132,8 +135,7 @@ def predictor(query):
             lg.tolist()[0],
             svm.tolist()[0],
             pout.tolist()[0],
-            lout.tolist()[0],
-            cnn_out.tolist()[0]]
+            lout.tolist()[0]]
 
 
 def get_most_count(x):
@@ -158,8 +160,7 @@ def processing_results(query):
             'Logistic Regression': 0,
             'SVM': 0,
             '3-layer Perceptron': 0,
-            'LSTM network': 0,
-            'Convolutional Neural Network': 0}
+            'LSTM network': 0}
 
     # overal per sentence
     predict_list = np.array(predict_list)
@@ -182,7 +183,5 @@ def processing_results(query):
 
     # overall score
     score = most_common(list(data.values()))
-
-    print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    gc.collect()
     return data, emotion_sents, score, line_sentiment, query
-

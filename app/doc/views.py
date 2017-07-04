@@ -38,9 +38,7 @@ def doc():
             return render_template('projects/doc.html', message='Please separate each line with "."')
 
         data, emotion_sents, score, line_sentiment, text = processing_results(text)
-        print('Memory usage before gc: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-        gc.collect()
-        print('Memory usage after gc: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+
         return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:
         return render_template('projects/doc.html')
