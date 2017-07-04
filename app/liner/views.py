@@ -8,6 +8,10 @@ liner_mod = Blueprint('liner', __name__, template_folder='templates', static_fol
 def liner():
     if request.method == 'POST':
         query = request.form['liner-text']
+        text = query.split('.')[:-1]
+        if len(text) == 0:
+            return render_template('projects/doc.html', message='Please separate each line with "."')
+
         data, emotion_sents, score, line_sentiment, text = processing_results(query)
         return render_template('projects/line.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:

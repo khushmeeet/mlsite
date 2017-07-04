@@ -5,6 +5,9 @@
         <input type="file" name="file" id="upload">
         <input type="submit" value="Upload">
     </form>
+    {% if message %}
+        <div class="alert alert-danger warning">{{ message }}</div>
+    {% endif %}
     {% if data %}
         {% if data[2] == 0 %}
             <h5 class="overall">Overall sentiment : <span class="neg">Negative</span></h5>

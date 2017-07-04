@@ -30,6 +30,11 @@ def doc():
             file.save(os.path.join(UPLOAD_FOLDER, filename))
         with open('./uploads/' + filename) as f:
             query = f.read()
+
+        text = query.split('.')[:-1]
+        if len(text) == 0:
+            return render_template('projects/doc.html', message='Please separate each line with "."')
+
         data, emotion_sents, score, line_sentiment, text = processing_results(query)
 
         return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])

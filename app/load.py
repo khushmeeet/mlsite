@@ -2,50 +2,61 @@ import numpy as np
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
-import pickle
 from collections import Counter
 import resource
 import tweepy
+import boto3.session
+import _pickle
 
-print('load executed')
+
+session = boto3.session.Session(region_name='ap-south-1')
+s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),aws_access_key_id='AKIAJJQXOZZ2YMWA5XEA',
+                          aws_secret_access_key='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')
 
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
 
 
-def open_pkl(str):
-    with open(str, 'rb') as f:
-        x = pickle.load(f)
-    return x
+def load_from_s3(str):
+    response = s3client.get_object(Bucket='mlsite-bucket', Key=str)
+    body = response['Body'].read()
+    detector = _pickle.loads(body)
+    return detector
 
 
-word2index = open_pkl('app/static/models/word2index.pkl')
-vectorizer = open_pkl('app/static/models/vectorizer.pkl')
+# def open_pkl(str):
+#     with open(str, 'rb') as f:
+#         x = pickle.load(f)
+#     return x
+
+
+word2index = load_from_s3('models/word2index.pkl')
+vectorizer = load_from_s3('models/vectorizer.pkl')
 
 
 def init_model():
-    # perceptron_model = load_model('app/static/models/3layer.h5')
-    # lstm_model = load_model('app/static/models/lstm.h5')
+    perceptron_model = load_model('app/static/models/3layer.h5')
+    lstm_model = load_model('app/static/models/lstm.h5')
     cnn_model = load_model('app/static/models/cnn.h5')
     cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
     return cnn_model, graph
 
 
 
 cnn, graph = init_model()
-logistic = open_pkl('app/static/models/logisticreg.pkl')
-adaboost = open_pkl('app/static/models/adaboost.pkl')
-bernoulli = open_pkl('app/static/models/bernoullinb.pkl')
-decisiontree = open_pkl('app/static/models/decisiontree.pkl')
-gradientboost = open_pkl('app/static/models/gradientboost.pkl')
-knn = open_pkl('app/static/models/knn.pkl')
-randomforest = open_pkl('app/static/models/randomforest.pkl')
-multinomialnb = open_pkl('app/static/models/multinomialnb.pkl')
-svm10 = open_pkl('app/static/models/svm10.pkl')
+logistic = load_from_s3('models/logisticreg.pkl')
+adaboost = load_from_s3('models/adaboost.pkl')
+bernoulli = load_from_s3('models/bernoullinb.pkl')
+decisiontree = load_from_s3('models/decisiontree.pkl')
+gradientboost = load_from_s3('models/gradientboost.pkl')
+knn = load_from_s3('models/knn.pkl')
+randomforest = load_from_s3('models/randomforest.pkl')
+multinomialnb = load_from_s3('models/multinomialnb.pkl')
+svm10 = load_from_s3('models/svm10.pkl')
 
 auth = tweepy.OAuthHandler('hXJ8TwQzVya3yYwQN1GNvGNNp', 'diX9CFVOOfWNli2KTAYY13vZVJgw1sYlEeOTxsLsEb2x73oI8S')
 auth.set_access_token('2155329456-53H1M9QKqlQbEkLExgVgkeallweZ9N74Aigm9Kh',
@@ -124,7 +135,7 @@ def get_most_count(x):
 
 
 def processing_results(query):
-    text = query.split('.')[:-1]
+    # text = query.split('.')[:-1]
     predict_list = []
     line_sentiment = []
     for t in text:
@@ -149,6 +160,7 @@ def processing_results(query):
     predict_list = np.array(predict_list)
     i = 0
     for key in data:
+
         data[key] = get_most_count(predict_list[:, i])
         i += 1
 

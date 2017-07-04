@@ -9,6 +9,7 @@ ascii_chars = set(string.printable)
 ascii_chars.remove(' ')
 ascii_chars.add('...')
 
+
 def takeout_non_ascii(s):
     return list(filter(lambda x: x not in ascii_chars, s))
 
@@ -21,10 +22,10 @@ def twitter():
         text = []
         for tweet in public_tweets:
             temp = ''.join(takeout_non_ascii(tweet.text))
-            text.append(temp)
+            if not len(temp) in range(3):
+                text.append(temp)
 
-        query = '.'.join(text)
-        data, emotion_sents, score, line_sentiment, text = processing_results(query)
+        data, emotion_sents, score, line_sentiment, text = processing_results(text)
 
         return render_template('projects/twitter.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:

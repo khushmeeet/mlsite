@@ -6,6 +6,15 @@ body {
     display: none;
 }
 
+.warning {
+    width: 20%;
+    margin: 0 auto;
+}
+
+form[method=post] {
+    margin-bottom: 40px;
+}
+
 
 /* index/home.html */
 
