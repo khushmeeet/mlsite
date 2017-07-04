@@ -78,7 +78,7 @@ def clean(query):
 
 
 def pencode(text):
-    vector = np.zeros(9451)
+    vector = np.zeros(12429)
     for i, word in enumerate(text.split(' ')):
         try:
             vector[word2index[word]] = 1
@@ -115,8 +115,8 @@ def predictor(query):
     svm = svm10.predict(clean_query)
 
     with graph.as_default():
-        pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
-        lout = lmodel.predict((lencode(query)))
+        pout = pmodel.predict(lencode(query))
+        lout = lmodel.predict(lencode(query))
         # cnn_out = cnn.predict(lencode(query))
         pout = np.argmax(pout, axis=1)
         lout = np.argmax(lout, axis=1)

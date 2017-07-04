@@ -9,7 +9,6 @@ def liner():
     if request.method == 'POST':
         query = request.form['liner-text']
         text = query.split('.')[:-1]
-        print(text)
         if len(text) == 0:
             return render_template('projects/line.html', message='Please separate each line with "."')
 
