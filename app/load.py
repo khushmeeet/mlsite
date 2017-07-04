@@ -10,8 +10,11 @@ import _pickle
 
 
 session = boto3.session.Session(region_name='ap-south-1')
-s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),aws_access_key_id='AKIAIMTAOA6XB6DCJPVQ',
+s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),
+                          aws_access_key_id='AKIAIMTAOA6XB6DCJPVQ',
                           aws_secret_access_key='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')
+
+print(session, s3client)
 
 
 def most_common(lst):
