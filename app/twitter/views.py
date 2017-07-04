@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template
 from ..load import processing_results, api
 import string
+import tweepy
 
 
 twitter_mod = Blueprint('twitter', __name__, template_folder='templates', static_folder='static')
@@ -18,9 +19,8 @@ def takeout_non_ascii(s):
 def twitter():
     if request.method == 'POST':
 
-        public_tweets = api.search(request.form['topic'], lang='hi', rpp=100)
         text = []
-        for tweet in public_tweets:
+        for tweet in tweepy.Cursor(api.search, request.form['topic'], lang='hi').items(200):
             temp = ''.join(takeout_non_ascii(tweet.text))
             if not len(temp) in range(3):
                 text.append(temp)

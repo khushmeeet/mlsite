@@ -123,8 +123,6 @@ def predictor(query):
         lout = np.argmax(lout, axis=1)
         # cnn_out = np.argmax(cnn_out, axis=1)
 
-    print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-
     return [ada.tolist()[0],
             ber.tolist()[0],
             dt.tolist()[0],
