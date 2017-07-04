@@ -2,6 +2,8 @@ from flask import Blueprint, request, render_template, flash, redirect
 from ..load import processing_results
 from werkzeug.utils import secure_filename
 import os
+import gc
+import resource
 
 doc_mod = Blueprint('doc', __name__, template_folder='templates', static_folder='static')
 
@@ -35,8 +37,10 @@ def doc():
         if len(text) == 0:
             return render_template('projects/doc.html', message='Please separate each line with "."')
 
-        data, emotion_sents, score, line_sentiment, text = processing_results(query)
-
+        data, emotion_sents, score, line_sentiment, text = processing_results(text)
+        print('Memory usage before gc: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        gc.collect()
+        print('Memory usage after gc: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
         return render_template('projects/doc.html', data=[data, emotion_sents, score, zip(text, line_sentiment)])
     else:
         return render_template('projects/doc.html')

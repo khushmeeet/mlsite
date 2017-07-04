@@ -1,19 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="front-page">
-        <h2>Welcome to Sentiment analysis project</h2>
-        <p>us et ultrices posuere cubilia Curae; Aliquam imperdiet convallis pellentesque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin ac est tempor, fringilla leo id, interdum arcu. Nam sed eros vestibulum, hendrerit arcu aliquet, interdum lacus. Aenean et justo non ipsum eleifend lobortis. Pellentesque venenatis, justo non accumsan dignissim, metus ipsum imperdiet est, vitae fringilla risus ex rhoncus est.</p>
-        <br>
-        <h4>Line analysis</h4>
-        <p>finibus tempus. Proin tortor enim, fringilla elementum suscipit ac, eleifend sit amet libero. Nulla gravida dolor quam, vel sodales lorem laoreet in. Suspendisse id purus luctus velit convallis tristique. Aliquam non nisl bibendum, eleifend lorem non, ullamcorper magna. Proin a pharetra libero.</p>
-        <br>
-        <h4>Document analysis</h4>
-        <p>pellentesque semper finibus, velit ligula suscipit dui, ac varius mauris orci at mauris. Aliquam tincidunt commodo cursus. Phasellus venenatis justo ac mauris venenatis, nec sollicitudin metus tempor. Vestibulum sodales iaculis nunc at pulvinar. Sed porttitor arcu at tellus varius, a malesuada quam dapibus.</p>
-        <br>
-        <h4>Twitter Ananlysis</h4>
-        <p>e mauris. Aliquam varius eleifend odio ac suscipit. Integer eu libero sed odio varius mattis. Aliquam hendrerit sagittis dolor, at finibus est tincidunt accumsan. Nullam congue purus id turpis consequat, quis varius nunc ornare.</p>
-        <a href="{{ url_for('liner.liner') }}">
-            <button type="button" class="btn btn-primary">Experience us now</button>
-        </a>
+    <div class="container home-area">
+        <div class="vertical-bar">
+            <img src="{{ url_for('static', filename='pic1.jpg') }}">
+        </div>
+        <div class="content-bar">
+            <h2>Welcome to Sentiment analysis project</h2>
+            <p>Sentiment Analysis (SA) aims to determine the attitude of a speaker, writer, or other subject with respect to some topic or the overall contextual polarity or emotional reaction to a document, interaction, or event.
+                Sentiments can be expressed in binary or multi-class form.
+                Binary sentiment classification includes positive and negative class while multi-class sentiment classification consists of more than two classes, i.e., positive, highly positive, negative, highly negative and neutral etc.
+                This system classifies the sentences or documents of Hindi text into three classes such as positive, negative and neutral</p>
+            <br>
+            <h4>Sentence Level analysis</h4>
+            <p>It determines whether each sentence expressed a positive, negative, or neutral opinion.</p>
+            <br>
+            <h4>Document Level analysis</h4>
+            <p>Document level considers that a document is an opinion on an entity or aspect of it.
+                The task is to classify whether a whole opinion document expresses a positive or negative sentiment.
+                For example, given a product review, the system determines whether the review expresses an overall positive or negative opinion about the product.</p>
+            <br>
+            <h4>Twitter Ananlysis</h4>
+            <p>e mauris. Aliquam varius eleifend odio ac suscipit. Integer eu libero sed odio varius mattis. Aliquam hendrerit sagittis dolor, at finibus est tincidunt accumsan. Nullam congue purus id turpis consequat, quis varius nunc ornare.</p>
+            <a href="{{ url_for('liner.liner') }}">
+                <button type="button" class="btn btn-primary">Experience us now</button>
+            </a>
+        </div>
+        <div class="vertical-bar">
+            <img src="{{ url_for('static', filename='pic2.jpg') }}">
+        </div>
     </div>
 {% endblock %}

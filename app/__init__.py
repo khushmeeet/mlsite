@@ -3,6 +3,7 @@ from .home.views import home_mod
 from .liner.views import liner_mod
 from .doc.views import doc_mod
 from .twitter.views import twitter_mod
+from .team.views import team_mod
 import os
 
 
@@ -14,6 +15,7 @@ app.register_blueprint(home_mod)
 app.register_blueprint(liner_mod)
 app.register_blueprint(doc_mod)
 app.register_blueprint(twitter_mod)
+app.register_blueprint(team_mod)
 
 
 @app.context_processor

@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h4>Please upload the file for sentiment analysis</h4>
-    <form method="post" enctype="multipart/form-data" action="{{ url_for('doc.doc') }}">
-        <input type="file" name="file" id="upload">
-        <input type="submit" value="Upload">
-    </form>
-    {% if message %}
-        <div class="alert alert-danger warning">{{ message }}</div>
-    {% endif %}
+    <div class="container">
+        <div class="col-md-10">
+            <h4 class="legend">Please upload the file for sentiment analysis</h4>
+            <form method="post" enctype="multipart/form-data" action="{{ url_for('doc.doc') }}">
+                <input type="file" name="file" id="upload">
+                <input type="submit" value="Upload" class="btn btn-primary">
+            </form>
+            {% if message %}
+                <div class="alert alert-danger warning">{{ message }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-2" style="padding-top: 4%;">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="{{ url_for('liner.liner') }}">Sentence Analysis</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="{{ url_for('twitter.twitter') }}">Tweet Analysis</a>
+                </li>
+            </ul>
+        </div>
+    </div>
     {% if data %}
         {% if data[2] == 0 %}
             <h5 class="overall">Overall sentiment : <span class="neg">Negative</span></h5>

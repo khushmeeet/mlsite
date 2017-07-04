@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="legend">
-        <h4>Please Enter your hindi text for sentiment analysis</h4>
+    <div class="container">
+        <div class="col-md-10">
+            <h4 class="legend">Please Enter your hindi text for sentiment analysis</h4>
+            <form id="input-form" action="{{ url_for('liner.liner') }}", method="post">
+                <textarea rows="10" cols="100" style="margin-bottom: 20px" name="liner-text"></textarea>
+                <br>
+                <input type="submit" value="Predict" class="btn btn-primary">
+            </form>
+            {% if message %}
+                <div class="alert alert-danger warning">{{ message }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-2" style="padding-top: 4%;">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="{{ url_for('doc.doc') }}">Document Analysis</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="{{ url_for('twitter.twitter') }}">Tweet Analysis</a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="text-form">
-        <form id="input-form" action="{{ url_for('liner.liner') }}", method="post">
-            <textarea rows="10" cols="100" style="margin-bottom: 20px" name="liner-text"></textarea>
-            <br>
-            <input type="submit" value="Predict">
-        </form>
-    </div>
-    {% if message %}
-        <div class="alert alert-danger warning">{{ message }}</div>
-    {% endif %}
     {% if data %}
         {% if data[2] == 0 %}
             <h5 class="overall">Overall sentiment : <span class="neg">Negative</span></h5>

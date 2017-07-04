@@ -10,8 +10,8 @@ import _pickle
 
 
 session = boto3.session.Session(region_name='ap-south-1')
-s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),aws_access_key_id='AKIAJJQXOZZ2YMWA5XEA',
-                          aws_secret_access_key='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')
+s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'),aws_access_key_id='AKIAIMTAOA6XB6DCJPVQ',
+                          aws_secret_access_key='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')
 
 
 def most_common(lst):
@@ -21,7 +21,11 @@ def most_common(lst):
 def load_from_s3(str):
     response = s3client.get_object(Bucket='mlsite-bucket', Key=str)
     body = response['Body'].read()
-    detector = _pickle.loads(body)
+    if '.h5' in str:
+        print('type', type(body))
+        detector = load_model(body)
+    else:
+        detector = _pickle.loads(body)
     return detector
 
 
@@ -43,11 +47,10 @@ def init_model():
     perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
-    return cnn_model, graph
+    return perceptron_model, lstm_model, cnn_model, graph
 
 
-
-cnn, graph = init_model()
+pmodel, lmodel, cnn, graph = init_model()
 logistic = load_from_s3('models/logisticreg.pkl')
 adaboost = load_from_s3('models/adaboost.pkl')
 bernoulli = load_from_s3('models/bernoullinb.pkl')
@@ -107,11 +110,11 @@ def predictor(query):
     svm = svm10.predict(clean_query)
 
     with graph.as_default():
-        # pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
-        # lout = lmodel.predict((lencode(query)))
+        pout = pmodel.predict(np.expand_dims(pencode(query), axis=0))
+        lout = lmodel.predict((lencode(query)))
         cnn_out = cnn.predict(lencode(query))
-        # pout = np.argmax(pout, axis=1)
-        # lout = np.argmax(lout, axis=1)
+        pout = np.argmax(pout, axis=1)
+        lout = np.argmax(lout, axis=1)
         cnn_out = np.argmax(cnn_out, axis=1)
 
     print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -125,8 +128,8 @@ def predictor(query):
             mnb.tolist()[0],
             lg.tolist()[0],
             svm.tolist()[0],
-            # pout.tolist()[0],
-            # lout.tolist()[0],
+            pout.tolist()[0],
+            lout.tolist()[0],
             cnn_out.tolist()[0]]
 
 
@@ -135,10 +138,9 @@ def get_most_count(x):
 
 
 def processing_results(query):
-    # text = query.split('.')[:-1]
     predict_list = []
     line_sentiment = []
-    for t in text:
+    for t in query:
         p = predictor(t)
         line_sentiment.append(most_common(p))
         predict_list.append(p)
@@ -152,8 +154,8 @@ def processing_results(query):
             'MultinomialNB': 0,
             'Logistic Regression': 0,
             'SVM': 0,
-            # '3-layer Perceptron': 0,
-            # 'LSTM network': 0,
+            '3-layer Perceptron': 0,
+            'LSTM network': 0,
             'Convolutional Neural Network': 0}
 
     # overal per sentence
@@ -179,6 +181,5 @@ def processing_results(query):
     score = most_common(list(data.values()))
 
     print('Memory usage: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-    return data, emotion_sents, score, line_sentiment, text
-
+    return data, emotion_sents, score, line_sentiment, query
 

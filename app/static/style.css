@@ -18,18 +18,26 @@ form[method=post] {
 
 /* index/home.html */
 
-.front-page {
+.legend {
     text-align: center;
-    width: 70%;
-    margin: 0 auto;
+    margin-bottom: 5px;
+
+}
+
+.vertical-bar {
+    width: 80%;
+    text-align: center;
+    padding: 50px;
+}
+
+.content-bar {
     padding: 10px;
 }
 
-.legend {
-    text-align: center;
-    margin-top: 50px;
-
+.home-area {
+    display: inline-flex;
 }
+
 
 /* projects/line.html */
 
@@ -56,15 +64,14 @@ form[method=post] {
     margin: 0 auto;
 }
 
+.sidebar {
+    width: 20%;
+}
+
 /* projects/doc.html */
 
 h4 {
     text-align: center;
-}
-
-input[type=submit] {
-    background-color: palegreen;
-    border: 2px palegreen solid;
 }
 
 .text-list {
@@ -92,8 +99,18 @@ input[type=submit] {
 
 .text-form {
     text-align: center;
+    display: inline-block;
 }
 
+/* team.html */
+.teams {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.profile {
+    margin-bottom: 50px;
+}
 
 /* */
 #predict {
