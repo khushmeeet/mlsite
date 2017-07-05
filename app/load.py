@@ -12,8 +12,8 @@ import gc
 
 session = boto3.session.Session(region_name='ap-south-1')
 s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4', region_name='ap-south-1'),
-                          aws_access_key_id='**',
-                          aws_secret_access_key='**')
+                          aws_access_key_id='AKIAJ7WLIGYDSJ3FDY2A',
+                          aws_secret_access_key='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')
 
 
 def most_common(lst):
