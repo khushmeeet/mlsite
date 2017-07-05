@@ -12,8 +12,8 @@ import gc
 
 session = boto3.session.Session(region_name='ap-south-1')
 s3client = session.client('s3', config=boto3.session.Config(signature_version='s3v4', region_name='ap-south-1'),
-                          aws_access_key_id='AKIAI33TBMEPEQC42LWA',
-                          aws_secret_access_key='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')
+                          aws_access_key_id='AKIAJ7WLIGYDSJ3FDY2A',
+                          aws_secret_access_key='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')
 
 
 def most_common(lst):
@@ -32,28 +32,20 @@ def load_from_s3(str):
     return detector
 
 
-# def open_pkl(str):
-#     with open(str, 'rb') as f:
-#         x = pickle.load(f)
-#     return x
-
-
 word2index = load_from_s3('models/word2index.pkl')
 vectorizer = load_from_s3('models/vectorizer.pkl')
 
 
 def init_model():
     lstm_model = load_model('app/static/models/lstm.h5')
-    perceptron_model = load_model('app/static/models/3layer.h5')
-    # cnn_model = load_model('app/static/models/cnn.h5')
-    # cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    perceptron_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    cnn_model = load_model('app/static/models/cnn.h5')
+    cnn_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     lstm_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     graph = tf.get_default_graph()
-    return perceptron_model, lstm_model, graph
+    return lstm_model, cnn_model, graph
 
 
-pmodel, lmodel, graph = init_model()
+lmodel, cnn, graph = init_model()
 logistic = load_from_s3('models/logisticreg.pkl')
 adaboost = load_from_s3('models/adaboost.pkl')
 bernoulli = load_from_s3('models/bernoullinb.pkl')
@@ -77,14 +69,14 @@ def clean(query):
     return vectorizer.transform([query])
 
 
-def pencode(text):
-    vector = np.zeros(12429)
-    for i, word in enumerate(text.split(' ')):
-        try:
-            vector[word2index[word]] = 1
-        except KeyError:
-            vector[i] = 0
-    return vector
+# def pencode(text):
+#     vector = np.zeros(12429)
+#     for i, word in enumerate(text.split(' ')):
+#         try:
+#             vector[word2index[word]] = 1
+#         except KeyError:
+#             vector[i] = 0
+#     return vector
 
 
 def lencode(text):
@@ -115,12 +107,10 @@ def predictor(query):
     svm = svm10.predict(clean_query)
 
     with graph.as_default():
-        pout = pmodel.predict(lencode(query))
         lout = lmodel.predict(lencode(query))
-        # cnn_out = cnn.predict(lencode(query))
-        pout = np.argmax(pout, axis=1)
+        cnn_out = cnn.predict(lencode(query))
         lout = np.argmax(lout, axis=1)
-        # cnn_out = np.argmax(cnn_out, axis=1)
+        cnn_out = np.argmax(cnn_out, axis=1)
 
     return [ada.tolist()[0],
             ber.tolist()[0],
@@ -131,8 +121,8 @@ def predictor(query):
             mnb.tolist()[0],
             lg.tolist()[0],
             svm.tolist()[0],
-            pout.tolist()[0],
-            lout.tolist()[0]]
+            lout.tolist()[0],
+            cnn_out.tolist()[0]]
 
 
 def get_most_count(x):
@@ -156,8 +146,8 @@ def processing_results(query):
             'MultinomialNB': 0,
             'Logistic Regression': 0,
             'SVM': 0,
-            '3-layer Perceptron': 0,
-            'LSTM network': 0}
+            'LSTM network': 0,
+            'Convolutional Neural Network': 0}
 
     # overal per sentence
     predict_list = np.array(predict_list)
